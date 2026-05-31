@@ -17,8 +17,18 @@
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+      import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+      
       // قراءة مفاتيح فايربيس من ملف config.js مباشرة
       const app = initializeApp(APP_CONFIG.FIREBASE_CONFIG);
+      
+      // تجهيز مكتبة Firestore وتمريرها لتعمل داخل النظام
+      window.fsDb = getFirestore(app);
+      window.fsDoc = doc;
+      window.fsGetDoc = getDoc;
+      window.fsSetDoc = setDoc;
+      window.firebaseReady = true;
+      if (window.onFirebaseReady) window.onFirebaseReady();
     </script>
 </head>
 <body class="light-mode">
