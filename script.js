@@ -1,7 +1,6 @@
 // ============ 1. قاعدة البيانات (Auto-Seed) لتوليد بيانات تلقائية ============
 let db;
 try {
-    // تم التعديل لجلب اسم المفتاح من ملف config.js الذي أنشأناه
     db = JSON.parse(localStorage.getItem(APP_CONFIG.DB_KEY));
 } catch (e) {
     db = null;
@@ -58,7 +57,7 @@ function customPrompt(msg, cb) {
     else { let v = prompt(msg); cb(v); }
 }
 
-// ============ 3. التشغيل والدخول السريع ومحرك PWA ============
+// ============ 3. التشغيل السحابي والدخول السريع ومحرك PWA ============
 
 // كود تثبيت PWA
 let deferredPrompt;
@@ -82,7 +81,25 @@ document.getElementById('trigger-install-modal').addEventListener('click', () =>
     showModal('pwa-install-modal');
 });
 
-window.onload = () => {
+// آلية الربط السحابي الحقيقي مع فايربيس قبل فتح النظام
+async function startApp() {
+    if (window.firebaseReady && window.fsDb) {
+        try {
+            // جلب البيانات من فايربيس (السحابة) باستخدام مفتاح المدرسة
+            const docRef = window.fsDoc(window.fsDb, "schools", APP_CONFIG.DB_KEY);
+            const docSnap = await window.fsGetDoc(docRef);
+            if (docSnap.exists()) {
+                db = docSnap.data(); // تحديث المتغير المحلي بالبيانات السحابية
+                localStorage.setItem(APP_CONFIG.DB_KEY, JSON.stringify(db));
+            } else {
+                // في حال كانت المدرسة جديدة ولم تحفظ سحابياً بعد، نرفع البيانات الأساسية
+                await window.fsSetDoc(docRef, db);
+            }
+        } catch (e) {
+            console.error("حدث خطأ في الاتصال بالسحابة، سيتم العمل على النسخة المحلية:", e);
+        }
+    }
+    
     applyTheme(db.theme);
     if (!db.schoolName || db.schoolName.trim() === '') { 
         document.getElementById('setup-modal').classList.add('active'); 
@@ -91,9 +108,27 @@ window.onload = () => {
         document.getElementById('app').classList.remove('hidden'); 
         initApp(); 
     }
+}
+
+// تشغيل النظام
+window.onload = () => {
+    if (window.firebaseReady) {
+        startApp();
+    } else {
+        window.onFirebaseReady = startApp;
+        // مؤقت طوارئ في حال تأخر فايربيس في التحميل
+        setTimeout(() => { if (!window.firebaseReady) startApp(); }, 3000);
+    }
 };
 
-function saveDB() { localStorage.setItem(APP_CONFIG.DB_KEY, JSON.stringify(db)); }
+// دالة الحفظ المعدلة لتعمل محلياً وسحابياً دون إبطاء الواجهة
+function saveDB() { 
+    localStorage.setItem(APP_CONFIG.DB_KEY, JSON.stringify(db)); 
+    if (window.firebaseReady && window.fsDb) {
+        const docRef = window.fsDoc(window.fsDb, "schools", APP_CONFIG.DB_KEY);
+        window.fsSetDoc(docRef, db).catch(e => console.error("خطأ أثناء المزامنة السحابية:", e));
+    }
+}
 
 function saveSetup() {
     let name = document.getElementById('setup-school-name').value;
@@ -205,7 +240,7 @@ function restoreBackup(event) {
             let importedDB = JSON.parse(e.target.result);
             if(importedDB && importedDB.students) {
                 db = importedDB;
-                saveDB();
+                saveDB(); // يتم المزامنة للسحابة تلقائياً
                 customAlert('تم استعادة النسخة الاحتياطية بنجاح!', 'success');
                 setTimeout(() => location.reload(), 1500);
             } else {
@@ -734,7 +769,7 @@ function renderStatistics() {
     document.getElementById('statistics-list').innerHTML = html || '<div class="text-center">لا توجد صفوف</div>';
 }
 
-// ============ 11. التقارير والطباعة (تعديل جذري للتصميم المطبوع) ============
+// ============ 11. التقارير والطباعة ============
 function generateReport() { 
     let cId=document.getElementById('rep-class').value, sId=document.getElementById('rep-section').value; 
     if(!cId||!sId){document.getElementById('report-list').innerHTML='';return;} 
@@ -811,7 +846,6 @@ function printGrades() {
     window.print(); 
 }
 
-// تعديل تصميم الوصل ليكون بتصميم 3D جميل مع حواف مقوسة
 function printReceipt() {
     let s = db.students.find(x => x.id === currentStudentId);
     let c = db.classes.find(x => x.id == s.classId);
