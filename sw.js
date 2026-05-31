@@ -1,4 +1,8 @@
-const CACHE_NAME = 'school-erp-cache-v1'; // يتم التحديث عبر سكربت الواجهة
+// استدعاء ملف الإعدادات لقراءة رقم الإصدار
+importScripts('config.js');
+
+// توليد اسم الذاكرة المخبأة ديناميكياً بناءً على الإصدار
+const CACHE_NAME = 'school-erp-cache-' + APP_CONFIG.APP_VERSION;
 
 const urlsToCache = [
   './',
@@ -48,7 +52,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
+            return caches.delete(cacheName); // حذف الإصدارات القديمة عند التحديث
           }
         })
       );
