@@ -829,19 +829,75 @@ function exportDriverExcel() {
 }
 
 function printGrades() { 
-    let s=db.students.find(x=>x.id===currentStudentId), c=db.classes.find(x=>x.id==s.classId); 
+    let s=db.students.find(x=>x.id===currentStudentId), c=db.classes.find(x=>x.id==s.classId), sc=c?c.sections.find(x=>x.id==s.sectionId):null; 
     document.querySelectorAll('#grades-table-container input').forEach(e=>e.setAttribute('value',e.value)); 
+    
+    let tableHtml = document.getElementById('grades-table-container').innerHTML;
+    
+    // استبدال المسميات برمجياً لورقة الطباعة فقط لتطابق الصورة المطلوبة دون التأثير على الواجهة الأصلية
+    tableHtml = tableHtml.replace(/<th>ش1<\/th>/g, '<th>الشهر<br>الأول</th>')
+                         .replace(/<th>ش2<\/th>/g, '<th>الشهر<br>الثاني</th>')
+                         .replace(/<th>ش3<\/th>/g, '<th>الشهر<br>الثالث</th>')
+                         .replace(/>معدل ف1</g, '>معدل<br>الفصل<br>الأول<')
+                         .replace(/>معدل ف2</g, '>معدل<br>الفصل<br>الثاني<')
+                         .replace(/>نصف السنة</g, '>نصف<br>السنة<')
+                         .replace(/>السعي السنوي</g, '>السعي<br>السنوي<')
+                         .replace(/>الامتحان النهائي</g, '>الامتحان<br>النهائي<')
+                         .replace(/>الدرجة النهائية</g, '>الدرجـة<br>النهائـية<')
+                         .replace(/class="bg-blue"/g, '')
+                         .replace(/<th colspan="3">الفصل الأول<\/th>/g, '<th colspan="3" class="bg-yellow">الفصل الأول</th>')
+                         .replace(/<th colspan="3">الفصل الثاني<\/th>/g, '<th colspan="3" class="bg-yellow">الفصل الثاني</th>');
+
     let html = `
-    <div style="font-family:Arial; padding:20px; direction:rtl;">
-        <div style="display:flex; justify-content:space-between; background:#2c3e50; color:#fff; padding:15px; font-weight:bold; font-size:22px; border: 2px solid #000;">
-            <span>${db.schoolName}</span>
-            <span>الصف: ${c?c.name:''}</span>
-        </div>
-        <div style="text-align:center; background:#f1c40f; padding:15px; font-size:24px; font-weight:bold; border: 2px solid #000; border-top:none; margin-bottom:10px;">
-            الطالب: <span style="color:#e74c3c;">${s.name}</span>
-        </div>
-        ${document.getElementById('grades-table-container').innerHTML}
+    <div class="print-wrapper" style="font-family: Arial, sans-serif; direction: rtl; width: 100%; margin: 0 auto; background: #fff;">
+        <style>
+            @media print {
+                @page { size: A4 landscape; margin: 10mm; }
+                body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff !important; }
+                #print-area { background: #fff !important; }
+                .print-wrapper { width: 100%; }
+                
+                /* تنسيق الرأس العلوي مطابق للصورة */
+                .header-tbl { width: 100%; border-collapse: collapse; border: 3px solid #000; font-weight: bold; font-size: 18px; margin-bottom: 0; background: #fff; }
+                .header-tbl td { border: 3px solid #000; padding: 6px; text-align: center; vertical-align: middle; }
+                .bg-blue-dark { background-color: #1a4d94 !important; color: white !important; font-size: 26px !important; font-weight: bold; }
+                .bg-yellow-print { background-color: #ffff00 !important; color: #000 !important; }
+                .text-red { color: #ff0000 !important; font-size: 24px !important; font-weight: 900; }
+                .bg-green-light { background-color: #8bc34a !important; color: #000 !important; font-size: 16px; }
+
+                /* تنسيق جدول الدرجات الأساسي مطابق للصورة */
+                .grades-tbl { width: 100%; border-collapse: collapse; border: 3px solid #000 !important; border-top: none !important; font-weight: bold; text-align: center; background: #fff; }
+                .grades-tbl th, .grades-tbl td { border: 3px solid #000 !important; padding: 2px !important; color: #000 !important; font-size: 16px; height: 35px; }
+                .grades-tbl thead th { background-color: #fff !important; }
+                .grades-tbl .bg-yellow { background-color: #ffff00 !important; }
+                .grades-tbl th.bg-yellow { background-color: #ffff00 !important; }
+                
+                /* تنسيق الحقول المدخلة */
+                .grades-tbl input { font-size: 16px !important; font-weight: bold !important; color: #000 !important; background: transparent !important; width: 100% !important; border: none !important; text-align: center !important; }
+                .grades-tbl input.sub-name { font-size: 18px !important; font-weight: 900 !important; }
+                
+                /* كلمة المادة باللون الأزرق */
+                .grades-tbl thead tr:first-child th:first-child { color: #1a4d94 !important; font-size: 20px !important; }
+            }
+        </style>
+
+        <table class="header-tbl">
+            <tr>
+                <td style="width: 8%;">التسلسل</td>
+                <td class="bg-green-light" style="width: 8%;">س ${s.regId || '-'}<br>3</td>
+                <td style="width: 8%;">الصف</td>
+                <td class="bg-yellow-print" style="width: 15%;">${c ? c.name : ''} ${sc ? sc.name : ''}</td>
+                <td class="bg-blue-dark">${db.schoolName}</td>
+            </tr>
+            <tr>
+                <td>اسم الطالب</td>
+                <td colspan="4" class="bg-yellow-print text-red">${s.name}</td>
+            </tr>
+        </table>
+        
+        ${tableHtml}
     </div>`;
+    
     document.getElementById('print-area').innerHTML = html; 
     window.print(); 
 }
