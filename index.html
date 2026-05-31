@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تطبيق إدارة المدرسة (نظام متكامل)</title>
-    <!-- إعدادات PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#a777e3">
     <link rel="apple-touch-icon" href="./icon-192x192.png">
@@ -14,33 +13,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- تحميل الإعدادات المتغيرة -->
     <script src="config.js"></script>
 
-    <!-- Firebase Integration -->
     <script type="module">
-      // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
-
-      // Your web app's Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyBBTgKrUmvmgfgdC_rvTjxnkBlsbu23gqA",
-        authDomain: "skol-al-rhman.firebaseapp.com",
-        projectId: "skol-al-rhman",
-        storageBucket: "skol-al-rhman.firebasestorage.app",
-        messagingSenderId: "757664712826",
-        appId: "1:757664712826:web:cb595e976cc47b9515d3c3"
-      };
-
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
+      // قراءة مفاتيح فايربيس من ملف config.js مباشرة
+      const app = initializeApp(APP_CONFIG.FIREBASE_CONFIG);
     </script>
 </head>
 <body class="light-mode">
 
-    <!-- شريط تحديث التطبيق (يظهر عند توفر إصدار جديد) -->
     <div id="pwa-update-bar">
         <span>يتوفر تحديث جديد للنظام!</span>
         <button onclick="reloadForUpdate()">تحديث الآن <i class="fas fa-sync"></i></button>
@@ -165,7 +147,6 @@
         </div>
 
         <div id="tab-settings" class="tab-content">
-            <!-- زر التثبيت PWA الذي يظهر تلقائياً -->
             <button type="button" class="btn-3d success w-100 mb-3" id="trigger-install-modal" style="display:none; animation: fadeIn 0.5s;"><i class="fas fa-download"></i> تثبيت التطبيق على الجهاز</button>
             
             <div class="glass p-3 mb-3 text-center flex-between">
@@ -230,7 +211,6 @@
         </div>
     </div>
 
-    <!-- PWA Install Modal المخصص -->
     <div id="pwa-install-modal" class="modal">
         <div class="modal-content glass text-center">
             <span class="close-btn" onclick="hideModal('pwa-install-modal')">&times;</span>
@@ -438,7 +418,6 @@
     <div id="print-area"></div>
     <script src="script.js"></script>
     
-    <!-- PWA Registration & Update Logic -->
     <script>
       let newWorker;
       if ('serviceWorker' in navigator) {
@@ -447,7 +426,6 @@
             reg.addEventListener('updatefound', () => {
               newWorker = reg.installing;
               newWorker.addEventListener('statechange', () => {
-                // عرض شريط التحديث إذا تم تنزيل إصدار جديد وتغير اسم النسخة في config
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                   document.getElementById('pwa-update-bar').classList.add('show');
                 }
