@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#a777e3">
     <link rel="apple-touch-icon" href="./icon-192x192.png">
     
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=staff-start-date-1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -324,7 +324,7 @@
             </div>
 
             <div class="grid-3 mb-2">
-                <button type="button" class="btn-3d success" onclick="showModal('payment-modal')"><i class="fas fa-money-bill-wave"></i> استلام قسط</button>
+                <button type="button" class="btn-3d success" onclick="openPaymentModal()"><i class="fas fa-money-bill-wave"></i> استلام قسط</button>
                 <button type="button" class="btn-3d warning" onclick="openGrades()"><i class="fas fa-star"></i> الدرجات</button>
                 <button type="button" class="btn-3d" style="background:#34495e;" onclick="openPromoteModal()"><i class="fas fa-level-up-alt"></i> ترحيل الطالب</button>
             </div>
@@ -366,6 +366,7 @@
             <h3 id="staff-modal-title"><i class="fas fa-user-tie"></i> إضافة / تعديل إداري</h3>
             <input type="text" id="staff-name" class="glass-input mt-2" placeholder="الاسم الكامل">
             <input type="text" id="staff-role" class="glass-input" placeholder="المنصب (مثال: مدير، حارس)">
+            <input type="date" id="staff-start-date" class="glass-input" title="تاريخ المباشرة">
             <input type="number" id="staff-salary" class="glass-input" placeholder="الراتب المقطوع (د.ع)">
             <button type="button" class="btn-3d success w-100" onclick="saveStaff()"><i class="fas fa-save"></i> حفظ الإداري</button>
         </div>
@@ -377,6 +378,7 @@
             <h3 id="teacher-modal-title"><i class="fas fa-chalkboard-teacher"></i> إضافة / تعديل مدرس</h3>
             <input type="text" id="teacher-name" class="glass-input mt-2" placeholder="الاسم الكامل">
             <input type="text" id="teacher-role" class="glass-input" placeholder="الاختصاص (مثال: مدرس كيمياء)">
+            <input type="date" id="teacher-start-date" class="glass-input" title="تاريخ المباشرة">
             <input type="number" id="teacher-year" class="glass-input" placeholder="سنة التعيين (مثال: 2018)">
             <button type="button" class="btn-3d warning w-100" onclick="saveTeacher()"><i class="fas fa-save"></i> حفظ المدرس</button>
         </div>
@@ -467,7 +469,7 @@
     </div>
 
     <div id="print-area"></div>
-    <script src="script.js"></script>
+    <script src="script.js?v=staff-start-date-1"></script>
     
     <script>
       let newWorker;
