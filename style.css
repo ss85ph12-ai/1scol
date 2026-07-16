@@ -123,9 +123,24 @@ body.dark-mode .nav-btn.active { color: #a29bfe; }
 .swal2-glass { background: var(--glass-bg) !important; backdrop-filter: blur(20px) !important; border: 1px solid var(--glass-border) !important; border-radius: 15px !important; color: var(--text-color) !important; }
 .swal2-title, .swal2-html-container { color: var(--text-color) !important; font-family: 'Tajawal', sans-serif !important; }
 .swal2-input { background: rgba(255,255,255,0.3) !important; border: 1px solid var(--glass-border) !important; color: var(--text-color) !important; }
+.required-alert-popup { box-shadow: 0 18px 60px rgba(231,76,60,0.35), 0 0 0 1px rgba(255,255,255,0.35) inset !important; }
+.required-alert-popup .swal2-close { color: #e74c3c !important; font-size: 34px !important; transition: transform .2s ease; }
+.required-alert-popup .swal2-close:hover { transform: rotate(90deg) scale(1.08); }
+.required-alert-text { line-height: 1.9; font-weight: 700; }
+.required-alert-text b { color: #e74c3c; }
+.field-required-missing {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 0 3px rgba(255,77,77,0.22), 0 0 18px rgba(255,77,77,0.42) !important;
+    animation: fieldPulse 0.8s ease-in-out 2;
+}
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes validation-pop-in { 0% { opacity: 0; transform: scale(.72) translateY(24px) rotate(-2deg); } 55% { opacity: 1; transform: scale(1.04) translateY(-4px) rotate(1deg); } 100% { opacity: 1; transform: scale(1) translateY(0) rotate(0); } }
+@keyframes validation-pop-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.88) translateY(12px); } }
+@keyframes fieldPulse { 0%,100% { transform: translateX(0); } 20% { transform: translateX(5px); } 40% { transform: translateX(-5px); } 60% { transform: translateX(3px); } 80% { transform: translateX(-3px); } }
+.validation-pop-in { animation: validation-pop-in .42s cubic-bezier(.2, 1.4, .35, 1) both !important; }
+.validation-pop-out { animation: validation-pop-out .2s ease-in both !important; }
 
 .grades-tbl { width: 100%; border-collapse: collapse; text-align: center; background: #fff; color: #000; min-width: 800px;}
 .grades-tbl th, .grades-tbl td { border: 2px solid #000; padding: 5px; font-weight: bold; font-size: 14px;}
@@ -202,7 +217,7 @@ body.dark-mode .nav-btn.active { color: #a29bfe; }
     }
 
     .receipt-print-container { 
-        background-color: #e0f2fe !important; 
+        background-color: #fff !important; 
         margin: 0 !important; 
         display: flex !important;
         flex-direction: column;
